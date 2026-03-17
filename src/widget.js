@@ -46,7 +46,7 @@
   function loadScript(src, cb) {
     var s = document.createElement('script');
     s.src = src;
-    s.onload = cb;
+    s.onload = function () { cb(); };
     s.onerror = function () { cb(new Error('Could not load ' + src)); };
     document.head.appendChild(s);
   }
