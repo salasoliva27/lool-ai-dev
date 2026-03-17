@@ -1,9 +1,12 @@
 (function (global) {
   'use strict';
 
-  // ─── CDN ──────────────────────────────────────────────────────────────────────
-  var FACE_API_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js';
-  var MODEL_URL    = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+  // ─── Asset base — resolves relative to this script's own location ─────────────
+  var _scriptSrc = (document.currentScript && document.currentScript.src) || '';
+  var _base      = _scriptSrc ? _scriptSrc.replace(/\/src\/widget\.js.*$/, '') : '';
+
+  var FACE_API_URL = _base + '/vendor/face-api.js';
+  var MODEL_URL    = _base + '/vendor/models/';
 
   // 68-point landmark indices
   var LM = {
