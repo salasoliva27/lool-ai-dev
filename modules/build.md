@@ -20,19 +20,19 @@
 
 | Stage | Description | Definition of done | Status |
 |---|---|---|---|
-| 1 | Try-on widget core | Script tag embeddable on any page. Camera opens, MediaPipe detects face, glasses image overlaid in real time. Works on desktop + mobile Chrome/Safari. | ⬜ |
-| 2 | Photo capture + save | Customer can freeze the frame and download the photo to their device. | ⬜ |
+| 1 | Try-on widget core | Script tag embeddable on any page. Camera opens, MediaPipe detects face, glasses image overlaid in real time. Works on desktop + mobile Chrome/Safari. | ✅ |
+| 2 | Photo capture + save | Customer can freeze the frame and download the photo to their device. | ✅ |
 | 3 | Store dashboard | Store owner logs in, uploads glasses catalog (image + name + product ID), gets their unique `<script>` tag. | ⬜ |
 | 4 | Per-client integration | For each new store: connect widget to their catalog (Shopify, WooCommerce, custom — handled case by case). | ⬜ |
 | 5 | Billing | Stripe MXN subscription. Store pays monthly, loses access if they cancel. | ⬜ |
 | 6 | LFPDPPP compliance | Privacy notice shown before camera activates. Consent recorded. No facial data persisted server-side (camera runs locally in browser). | ⬜ |
 
 ### Current stage
-Stage 1 — not yet started.
+Stage 3 — store dashboard (catalog upload + embed code generator).
 
 ### Blockers
-- None. Stack is defined. Ready to build Stage 1.
-- Note: LFPDPPP risk is low for MVP since no facial data leaves the browser — but privacy notice still needed before real users.
+- None.
 
 ### Build log
 2026-03-17 — Stack defined. Vanilla JS + MediaPipe. Single script tag delivery model confirmed.
+2026-03-17 — Stage 1 + 2 complete. Widget live in src/widget.js. Demo page in demo/index.html with 3 sample frames. Camera opens in modal, face detected via MediaPipe, glasses overlaid in real time, photo save to device working.
