@@ -117,7 +117,7 @@
       videoEl,
       new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 })
     )
-    .withFaceLandmarks()
+    .withFaceLandmarks(true)
     .then(function (result) {
       var W = videoEl.videoWidth;
       var H = videoEl.videoHeight;
