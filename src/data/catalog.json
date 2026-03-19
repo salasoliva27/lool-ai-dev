@@ -1,0 +1,87 @@
+[
+  {
+    "id": "frame-z01",
+    "name": "Redondos Metal",
+    "brand": "Zenni",
+    "sku": "1125221",
+    "price_mxn": null,
+    "image_url": "https://static.zennioptical.com/production/products/general/11/25/1125221-eyeglasses-front-view.jpg",
+    "store_url": "https://www.zennioptical.com/p/1125221",
+    "measurements": {
+      "frame_width_mm": 127,
+      "svg_viewbox_width": 1200,
+      "svg_viewbox_height": 544,
+      "frame_x_fraction": 0.82,
+      "blend_mode": "multiply",
+      "y_offset_ratio": 0.2
+    }
+  },
+  {
+    "id": "frame-z02",
+    "name": "Stargazer Aviador",
+    "brand": "Zenni",
+    "sku": "7829125",
+    "price_mxn": null,
+    "image_url": "https://static.zennioptical.com/production/products/general/78/29/7829125-eyeglasses-front-view.jpg",
+    "store_url": "https://www.zennioptical.com/p/7829125",
+    "measurements": {
+      "frame_width_mm": 135,
+      "svg_viewbox_width": 1200,
+      "svg_viewbox_height": 408,
+      "frame_x_fraction": 0.82,
+      "blend_mode": "multiply",
+      "y_offset_ratio": 0.2
+    }
+  },
+  {
+    "id": "frame-z03",
+    "name": "Cat-Eye Negro",
+    "brand": "Zenni",
+    "sku": "4438924",
+    "price_mxn": null,
+    "image_url": "https://static.zennioptical.com/production/products/general/44/38/4438924-eyeglasses-front-view.jpg",
+    "store_url": "https://www.zennioptical.com/p/4438924",
+    "measurements": {
+      "frame_width_mm": 125,
+      "svg_viewbox_width": 1200,
+      "svg_viewbox_height": 418,
+      "frame_x_fraction": 0.82,
+      "blend_mode": "multiply",
+      "y_offset_ratio": 0.2
+    }
+  },
+  {
+    "id": "frame-z04",
+    "name": "Rectangular Slim",
+    "brand": "Zenni",
+    "sku": "499421",
+    "price_mxn": null,
+    "image_url": "https://static.zennioptical.com/production/products/general/49/94/499421-eyeglasses-front-view.jpg",
+    "store_url": "https://www.zennioptical.com/p/499421",
+    "measurements": {
+      "frame_width_mm": 130,
+      "svg_viewbox_width": 1200,
+      "svg_viewbox_height": 232,
+      "frame_x_fraction": 0.82,
+      "blend_mode": "multiply",
+      "y_offset_ratio": 0.2
+    }
+  },
+  {
+    "id": "frame-z05",
+    "name": "Bravo Clubmaster",
+    "brand": "Zenni",
+    "sku": "195421",
+    "price_mxn": null,
+    "image_url": "https://static.zennioptical.com/production/products/general/19/54/195421-eyeglasses-front-view.jpg",
+    "store_url": "https://www.zennioptical.com/p/195421",
+    "measurements": {
+      "frame_width_mm": 132,
+      "svg_viewbox_width": 1200,
+      "svg_viewbox_height": 378,
+      "frame_x_fraction": 0.82,
+      "blend_mode": "multiply",
+      "y_offset_ratio": 0.2
+    }
+  }
+]
