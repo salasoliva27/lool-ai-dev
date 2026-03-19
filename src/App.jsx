@@ -7,6 +7,17 @@ export default function App() {
   const [selectedFrame, setSelectedFrame] = useState(catalog[0])
   const [isTryOnActive, setIsTryOnActive] = useState(false)
 
+  function handleCartClick(frame) {
+    // Attribution log — swap this for your analytics (GA4, Mixpanel, etc.)
+    console.log('[lool-ai] cart_click', {
+      frame_id: frame.id,
+      frame_name: frame.name,
+      brand: frame.brand,
+      store_url: frame.store_url,
+      ts: new Date().toISOString(),
+    })
+  }
+
   return (
     <div className="relative w-full h-full bg-black overflow-hidden">
       {!isTryOnActive && (
@@ -21,6 +32,7 @@ export default function App() {
         onSelect={setSelectedFrame}
         onProbar={() => setIsTryOnActive(true)}
         isTryOnActive={isTryOnActive}
+        onCartClick={handleCartClick}
       />
     </div>
   )

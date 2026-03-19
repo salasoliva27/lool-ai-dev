@@ -246,6 +246,30 @@
     });
   }
 
+  // ─── UTM attribution ──────────────────────────────────────────────────────────
+  function buildCartUrl(storeUrl, frameId) {
+    if (!storeUrl) return null;
+    try {
+      var url = new URL(storeUrl);
+      url.searchParams.set('utm_source', 'lool-ai');
+      url.searchParams.set('utm_medium', 'widget');
+      url.searchParams.set('utm_campaign', 'tryon');
+      if (frameId) url.searchParams.set('utm_content', frameId);
+      return url.toString();
+    } catch (e) {
+      return storeUrl;
+    }
+  }
+
+  function trackCartClick(frameId, storeUrl) {
+    // Fires a custom DOM event — parent page can listen to this for analytics
+    var evt = new CustomEvent('lool:cart_click', {
+      bubbles: true,
+      detail: { frame_id: frameId, store_url: storeUrl, ts: new Date().toISOString() },
+    });
+    document.dispatchEvent(evt);
+  }
+
   // ─── Open try-on ─────────────────────────────────────────────────────────────
   function openTryOn(glassesSrc) {
     injectCSS();

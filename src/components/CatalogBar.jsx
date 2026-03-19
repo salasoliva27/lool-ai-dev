@@ -1,4 +1,18 @@
-export default function CatalogBar({ frames, selectedId, onSelect, onProbar, isTryOnActive }) {
+function buildCartUrl(frame) {
+  if (!frame?.store_url || frame.store_url.includes('example.com')) return null
+  try {
+    const url = new URL(frame.store_url)
+    url.searchParams.set('utm_source', 'lool-ai')
+    url.searchParams.set('utm_medium', 'widget')
+    url.searchParams.set('utm_campaign', 'tryon')
+    url.searchParams.set('utm_content', frame.id)
+    return url.toString()
+  } catch {
+    return frame.store_url
+  }
+}
+
+export default function CatalogBar({ frames, selectedId, onSelect, onProbar, isTryOnActive, onCartClick }) {
   const selectedFrame = frames.find((f) => f.id === selectedId)
 
   return (
@@ -52,11 +66,12 @@ export default function CatalogBar({ frames, selectedId, onSelect, onProbar, isT
               {isTryOnActive ? '✓ Probando' : 'Probar'}
             </button>
 
-            {selectedFrame.store_url && !selectedFrame.store_url.includes('example.com') ? (
+            {buildCartUrl(selectedFrame) ? (
               <a
-                href={selectedFrame.store_url}
+                href={buildCartUrl(selectedFrame)}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => onCartClick?.(selectedFrame)}
                 className="flex-1 border border-white/40 text-white font-semibold py-3 rounded-xl text-sm text-center hover:bg-white/10 active:scale-95 transition-all"
               >
                 Agregar al carrito →
