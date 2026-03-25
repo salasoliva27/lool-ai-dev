@@ -60,7 +60,19 @@ Which tools this project needs → [`TOOLS.md`](./TOOLS.md)
 
 Every time a chat opens — regardless of what the user says first — you MUST do the following before composing any response:
 
-### AUTOMATIC SESSION START (do this before responding to anything)
+### STEP 0 — PERMISSION MODE (ask this before anything else, every single session)
+
+Before recalling memory, ask Jano:
+
+---
+**🔐 Permission mode for this session?**
+**🟢 Full Auto** — everything without interruptions | **🟡 Smart** *(default)* — safe ops auto, confirm before push/delete/destructive | **🔴 Manual** — ask before each action
+
+---
+
+Wait for answer, then proceed. Full permission mode definitions → `venture-os/CLAUDE.md`
+
+### STEP 1 — AUTOMATIC SESSION START (do this right after getting permission mode)
 1. Call `recall("recent lool-ai work and decisions")` — gets this project's memory
 2. Call `recall("venture-os portfolio context and other projects")` — loads cross-project context
 3. Read this CLAUDE.md build status section — understand current state
