@@ -46,13 +46,11 @@ mcp-servers/       ← Memory MCP server (Supabase + pgvector)
 
 All keys are in `salasoliva27/dotfiles/.env` and auto-load into every Codespace.
 
-| Key | Env var |
-|---|---|
-| Anthropic API | `$ANTHROPIC_API_KEY` |
-| Brave Search | `$BRAVE_API_KEY` |
-| Supabase URL | `$SUPABASE_URL` |
-| Supabase service role | `$SUPABASE_SERVICE_ROLE_KEY` |
-| Voyage AI embeddings | `$VOYAGE_API_KEY` |
+**Full credential registry, status check, and "where to find" guide → [`venture-os/CREDENTIALS.md`](../venture-os/CREDENTIALS.md)**
+
+Never store secrets in this repo. Never ask Jano for a key in conversation.
+
+Which tools this project needs → [`TOOLS.md`](./TOOLS.md)
 
 ---
 
@@ -104,6 +102,8 @@ For build decisions or learnings, store separately with type="decision" or type=
 ---
 
 ## TOOLS FOR THIS PROJECT
+
+Declared tool list and storage routing → [`TOOLS.md`](./TOOLS.md)
 
 UI: shadcn/ui + Tailwind (`npx shadcn@latest add [component]`)
 Design direction: `uipro init --ai claude` before any UI work
