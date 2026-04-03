@@ -57,6 +57,9 @@ function landmarkToCanvas(normX, normY, videoW, videoH, srcX, srcY, srcW, srcH, 
 export default function TryOn({ selectedFrame, isActive }) {
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
+  // Offscreen canvas at fixed 640×360 fed to MediaPipe — decouples tracking
+  // resolution from display resolution so high-res camera stays smooth.
+  const trackCanvasRef = useRef(null)
   const animFrameRef = useRef(null)
   const landmarksRef = useRef(null)
   const selectedFrameRef = useRef(selectedFrame)
@@ -76,7 +79,7 @@ export default function TryOn({ selectedFrame, isActive }) {
     landmarksRef.current = results.multiFaceLandmarks?.[0] ?? null
   }, [])
 
-  const { processFrame } = useFaceMesh(videoRef, handleResults)
+  const { processFrame } = useFaceMesh(trackCanvasRef, handleResults)
 
   // Sync canvas intrinsic size to its CSS display size so drawing coordinates
   // match 1:1 with the displayed pixels — no stretching or object-fit ambiguity.
@@ -103,7 +106,13 @@ export default function TryOn({ selectedFrame, isActive }) {
 
     navigator.mediaDevices
       .getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: 'user',
+          width: { ideal: 3840, min: 1280 },
+          height: { ideal: 2160, min: 720 },
+          frameRate: { ideal: 30, min: 15 },
+          aspectRatio: { ideal: 16 / 9 },
+        },
         audio: false,
       })
       .then((s) => {
@@ -133,13 +142,28 @@ export default function TryOn({ selectedFrame, isActive }) {
     if (!ready) return
 
     const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { alpha: false })
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
     const video = videoRef.current
+
+    // Offscreen canvas for MediaPipe — fixed 640×360 so tracking stays fast
+    // regardless of the high-res camera stream.
+    const trackCanvas = document.createElement('canvas')
+    trackCanvas.width = 640
+    trackCanvas.height = 360
+    trackCanvasRef.current = trackCanvas
+    const trackCtx = trackCanvas.getContext('2d')
+
     let lastProcessTime = 0
 
     const loop = async (timestamp) => {
       if (timestamp - lastProcessTime > 33) {
         lastProcessTime = timestamp
+        // Draw current video frame downscaled into the tracking canvas for MediaPipe
+        if (video.readyState >= 2 && video.videoWidth > 0) {
+          trackCtx.drawImage(video, 0, 0, trackCanvas.width, trackCanvas.height)
+        }
         await processFrame()
       }
 
