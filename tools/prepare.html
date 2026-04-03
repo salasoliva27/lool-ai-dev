@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>lool.ai — Preparar Armazones</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 20px 32px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+    .logo span { color: #6ee7b7; }
+    .subtitle { font-size: 13px; color: #666; }
+
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .desc {
+      font-size: 15px;
+      color: #888;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    /* ── Drop Zone ───────────────────────────────────── */
+    .drop-zone {
+      border: 2px dashed #333;
+      border-radius: 16px;
+      padding: 60px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #6ee7b7;
+      background: rgba(110,231,183,.04);
+    }
+
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .drop-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .drop-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .drop-hint {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* ── Queue ───────────────────────────────────────── */
+    .queue {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .item {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .item-preview {
+      position: relative;
+      background: repeating-conic-gradient(#2a2a2a 0% 25%, #1a1a1a 0% 50%) 0 0 / 20px 20px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .item-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .item-preview .overlay-status {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #333;
+      border-top-color: #6ee7b7;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .item-body { padding: 16px 18px 18px; }
+
+    .item-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-meta {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 14px;
+    }
+
+    .item-actions { display: flex; gap: 8px; }
+
+    .btn {
+      flex: 1;
+      padding: 9px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn:hover { opacity: .85; }
+    .btn:disabled { opacity: .35; cursor: default; }
+
+    .btn-download {
+      background: #6ee7b7;
+      color: #0a0a0a;
+    }
+
+    .btn-add-catalog {
+      background: #222;
+      color: #ddd;
+      border: 1px solid #333;
+    }
+
+    .btn-retry {
+      background: #333;
+      color: #ddd;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+
+    .status-badge.processing { background: #1e293b; color: #60a5fa; }
+    .status-badge.done       { background: #052e16; color: #6ee7b7; }
+    .status-badge.error      { background: #2d0a0a; color: #f87171; }
+
+    /* ── Add to catalog panel ────────────────────────── */
+    .catalog-form {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .catalog-form.open { display: block; }
+
+    .catalog-form label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 5px;
+    }
+
+    .catalog-form input {
+      width: 100%;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 7px;
+      padding: 8px 11px;
+      font-size: 13px;
+      color: #f0f0f0;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    .catalog-form input:focus { border-color: #6ee7b7; }
+
+    .catalog-form .btn-save-catalog {
+      width: 100%;
+      padding: 10px;
+      background: #6ee7b7;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ── Instructions ────────────────────────────────── */
+    .tips {
+      margin-top: 50px;
+      border-top: 1px solid #1e1e1e;
+      padding-top: 32px;
+    }
+
+    .tips h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #aaa; }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .tip {
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .tip-icon { font-size: 22px; margin-bottom: 8px; }
+    .tip-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+    .tip-desc { font-size: 12px; color: #666; line-height: 1.5; }
+
+    /* ── Toast ───────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 14px;
+      color: #ddd;
+      max-width: 320px;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all .3s;
+      z-index: 9999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: #6ee7b7; color: #6ee7b7; }
+    .toast.error   { border-color: #f87171; color: #f87171; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">lool<span>.ai</span></div>
+    <div class="subtitle">Preparar armazones para AR</div>
+  </div>
+</header>
+
+<div class="main">
+  <h1>Preparar Armazones</h1>
+  <p class="desc">
+    Sube fotos de armazones — en mesa, en modelo, fondo blanco o cualquier fondo.
+    El procesamiento ocurre en tu navegador, sin subir nada a ningún servidor.
+    Recibirás un PNG con fondo transparente listo para el widget AR.
+  </p>
+
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/*" multiple>
+    <span class="drop-icon">🕶️</span>
+    <div class="drop-title">Arrastra fotos de armazones aquí</div>
+    <div class="drop-hint">JPG, PNG, WEBP — puedes soltar varios a la vez</div>
+  </div>
+
+  <div class="queue" id="queue"></div>
+
+  <div class="tips">
+    <h2>Mejores resultados</h2>
+    <div class="tips-grid">
+      <div class="tip">
+        <div class="tip-icon">📸</div>
+        <div class="tip-title">Vista frontal</div>
+        <div class="tip-desc">Foto de frente al armazón, sin perspectiva. El widget los superpone centrados sobre los ojos.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">💡</div>
+        <div class="tip-title">Buena iluminación</div>
+        <div class="tip-desc">Fondos contrastantes (blanco, negro, gris) dan los mejores recortes automáticos.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🎯</div>
+        <div class="tip-title">Solo el armazón</div>
+        <div class="tip-desc">Fotos de producto sin manos ni cara. También funciona con foto en modelo, pero el recorte puede ser menos preciso.</div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">⚡</div>
+        <div class="tip-title">Formato de salida</div>
+        <div class="tip-desc">PNG con canal alpha (fondo transparente), recortado al bounding box del armazón con 5% de padding.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Background removal — runs entirely in browser via WASM -->
+<script type="module">
+  import { removeBackground } from 'https://unpkg.com/@imgly/background-removal@1.7.0/dist/index.mjs';
+
+  const dropZone  = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const queue     = document.getElementById('queue');
+  const toast     = document.getElementById('toast');
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
+  function showToast(msg, type = '') {
+    toast.textContent = msg;
+    toast.className = 'toast show ' + type;
+    setTimeout(() => { toast.className = 'toast'; }, 3000);
+  }
+
+  // ── Drag & drop wiring ────────────────────────────────────────────────────
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    processFiles([...e.dataTransfer.files]);
+  });
+  fileInput.addEventListener('change', () => processFiles([...fileInput.files]));
+
+  // ── Process files ─────────────────────────────────────────────────────────
+  function processFiles(files) {
+    files.filter(f => f.type.startsWith('image/')).forEach(enqueue);
+  }
+
+  function enqueue(file) {
+    const id = 'item-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+    const originalUrl = URL.createObjectURL(file);
+    const baseName = file.name.replace(/\.[^.]+$/, '');
+
+    const item = document.createElement('div');
+    item.className = 'item';
+    item.id = id;
+    item.innerHTML = `
+      <div class="item-preview">
+        <img src="${originalUrl}" alt="">
+        <div class="overlay-status">
+          <div class="spinner"></div>
+          <span>Removiendo fondo…</span>
+        </div>
+      </div>
+      <div class="item-body">
+        <div class="status-badge processing">⏳ Procesando</div>
+        <div class="item-name">${file.name}</div>
+        <div class="item-meta">—</div>
+        <div class="item-actions">
+          <button class="btn btn-download" disabled>Descargar PNG</button>
+          <button class="btn btn-add-catalog" disabled>+ Catálogo</button>
+        </div>
+        <div class="catalog-form" id="form-${id}">
+          <label>Nombre del armazón</label>
+          <input type="text" id="name-${id}" placeholder="Ej: Wayfarer Negro" value="${baseName}">
+          <label>Precio (MXN)</label>
+          <input type="number" id="price-${id}" placeholder="2400">
+          <label>URL de la tienda (opcional)</label>
+          <input type="url" id="url-${id}" placeholder="https://…">
+          <button class="btn-save-catalog" id="save-${id}">Guardar en catálogo</button>
+        </div>
+      </div>
+    `;
+
+    queue.prepend(item);
+
+    processOne(file, item, id, baseName);
+  }
+
+  async function processOne(file, item, id, baseName) {
+    const preview = item.querySelector('.item-preview img');
+    const overlayStatus = item.querySelector('.overlay-status');
+    const badge = item.querySelector('.status-badge');
+    const meta  = item.querySelector('.item-meta');
+    const btnDl = item.querySelector('.btn-download');
+    const btnCat = item.querySelector('.btn-add-catalog');
+
+    try {
+      // 1. Remove background
+      overlayStatus.querySelector('span').textContent = 'Removiendo fondo…';
+      const blob = await removeBackground(file, {
+        model: 'medium',
+        output: { format: 'image/png', quality: 1 },
+      });
+
+      // 2. Auto-crop to glasses bounds
+      overlayStatus.querySelector('span').textContent = 'Recortando al armazón…';
+      const croppedBlob = await autoCrop(blob, 0.05);
+
+      // 3. Update UI
+      const resultUrl = URL.createObjectURL(croppedBlob);
+      preview.src = resultUrl;
+      overlayStatus.remove();
+
+      // Get dimensions
+      const img = new Image();
+      img.src = resultUrl;
+      await new Promise(r => { img.onload = r; });
+      meta.textContent = `${img.naturalWidth} × ${img.naturalHeight} px · PNG transparente`;
+
+      badge.className = 'status-badge done';
+      badge.textContent = '✓ Listo';
+
+      // Download button
+      btnDl.disabled = false;
+      btnDl.addEventListener('click', () => {
+        const a = document.createElement('a');
+        a.href = resultUrl;
+        a.download = baseName + '-prepared.png';
+        a.click();
+      });
+
+      // Add to catalog button
+      btnCat.disabled = false;
+      btnCat.addEventListener('click', () => {
+        const form = document.getElementById('form-' + id);
+        form.classList.toggle('open');
+      });
+
+      // Save to catalog
+      document.getElementById('save-' + id).addEventListener('click', () => {
+        addToCatalog(id, baseName, resultUrl, croppedBlob);
+      });
+
+    } catch (err) {
+      console.error(err);
+      overlayStatus.innerHTML = '<span style="color:#f87171">Error al procesar</span>';
+      badge.className = 'status-badge error';
+      badge.textContent = '✗ Error';
+      meta.textContent = err.message || 'Intenta con otra foto';
+
+      // Retry
+      const retry = document.createElement('button');
+      retry.className = 'btn btn-retry';
+      retry.textContent = 'Reintentar';
+      retry.style.width = '100%';
+      retry.style.marginTop = '8px';
+      retry.addEventListener('click', () => {
+        item.remove();
+        enqueue(file);
+      });
+      item.querySelector('.item-actions').after(retry);
+    }
+  }
+
+  // ── Auto-crop: find bounding box of non-transparent pixels ────────────────
+  async function autoCrop(blob, paddingFraction = 0.05) {
+    const img = new Image();
+    img.src = URL.createObjectURL(blob);
+    await new Promise(r => { img.onload = r; });
+
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+
+    const { data, width, height } = ctx.getImageData(0, 0, c.width, c.height);
+
+    let minX = width, maxX = 0, minY = height, maxY = 0;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const alpha = data[(y * width + x) * 4 + 3];
+        if (alpha > 10) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+
+    // Nothing found — return original
+    if (minX >= maxX || minY >= maxY) return blob;
+
+    const pad = Math.round(Math.max(maxX - minX, maxY - minY) * paddingFraction);
+    const x0 = Math.max(0, minX - pad);
+    const y0 = Math.max(0, minY - pad);
+    const x1 = Math.min(width,  maxX + pad);
+    const y1 = Math.min(height, maxY + pad);
+
+    const out = document.createElement('canvas');
+    out.width  = x1 - x0;
+    out.height = y1 - y0;
+    const octx = out.getContext('2d');
+    octx.drawImage(c, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
+
+    return new Promise(r => out.toBlob(r, 'image/png', 1));
+  }
+
+  // ── Add to catalog.json (downloads updated file) ─────────────────────────
+  async function addToCatalog(id, baseName, resultUrl, blob) {
+    const name  = document.getElementById('name-'  + id).value.trim() || baseName;
+    const price = document.getElementById('price-' + id).value.trim();
+    const url   = document.getElementById('url-'   + id).value.trim();
+
+    // Save PNG file
+    const a = document.createElement('a');
+    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const filename = 'frame-' + slug + '.png';
+    a.href = resultUrl;
+    a.download = filename;
+    a.click();
+
+    // Build catalog entry
+    const entry = {
+      id: 'frame-' + slug,
+      name,
+      brand: '',
+      sku: '',
+      price_mxn: price ? parseFloat(price) : null,
+      image_url: '/demo/glasses/' + filename,
+      store_url: url || null,
+      measurements: {
+        frame_width_mm: null,
+        frame_x_fraction: 0.82,
+        blend_mode: 'multiply',
+        y_offset_ratio: 0.2
+      }
+    };
+
+    // Load existing catalog
+    let catalog = [];
+    try {
+      const res = await fetch('/src/data/catalog.json');
+      catalog = await res.json();
+    } catch (_) {}
+
+    catalog.push(entry);
+
+    // Download updated catalog.json
+    const catBlob = new Blob([JSON.stringify(catalog, null, 2)], { type: 'application/json' });
+    const catA = document.createElement('a');
+    catA.href = URL.createObjectURL(catBlob);
+    catA.download = 'catalog.json';
+    catA.click();
+
+    document.getElementById('form-' + id).classList.remove('open');
+    showToast(`✓ "${name}" descargado. Mueve el PNG a /demo/glasses/ y reemplaza catalog.json`, 'success');
+  }
+</script>
+
+</body>
+</html>
