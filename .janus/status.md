@@ -4,6 +4,9 @@ stage: dev
 phase: ""
 phaseProgress: 0
 summary: "B2B SaaS virtual try-on widget for Mexican optical SMEs"
+lastSyncedAt: "2026-04-30T19:01:15.615Z"
+lastSyncedCommit: "cd2668f"
+lastSyncedCommitMessage: "chore: /compact process instructions"
 ---
 
 ## Next Steps
