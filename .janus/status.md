@@ -1,6 +1,6 @@
 ---
-lastSyncedAt: "2026-05-12T22:29:35.951Z"
-lastSyncedCommit: "46d4111"
+lastSyncedAt: "2026-05-12T22:29:37.846Z"
+lastSyncedCommit: "14ecdd8"
 lastSyncedCommitMessage: "chore(janus): sync .janus/status.md from wiki/lool-ai.md"
 ---
 
